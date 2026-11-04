@@ -68,6 +68,7 @@ th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;le
 </section>
 <section class="card" id="faq">
 <h2 style="margin:0 0 8px;font-size:18px">Good to know</h2>
+<p style="margin:0 0 4px">First and foremost, Cam is so excited to have you. He values nothing more than human connection, and people are the highlight of his journeys. Everything below is here to give you as much time on your feet with him as possible and to make the experience great for you. It all comes with love.</p>
 <h3 style="margin:12px 0 4px;font-size:15px">Will he wait while I get ready?</h3>
 <p style="margin:0">No. Cam's day is planned to the minute, so he leaves each stop right away. Arrive with your vest, belt and shoes sorted, or you'll be playing catch-up.</p>
 <h3 style="margin:12px 0 4px;font-size:15px">What happens at the 4-mile stops?</h3>
