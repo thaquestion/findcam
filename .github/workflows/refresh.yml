@@ -1,0 +1,32 @@
+name: Refresh Cam's position
+on:
+  schedule:
+    # every 5 minutes, about 5am to 10pm in Cam's time zone (10:00 to 03:59 UTC)
+    - cron: '*/5 10-23,0-3 * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: refresh
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Read Garmin feed and rebuild page
+        run: |
+          python build/live.py
+          python build/page.py
+          cp build/meet-cam.html index.html
+      - name: Publish if changed
+        run: |
+          git config user.name "findcam-bot"
+          git config user.email "findcam-bot@users.noreply.github.com"
+          git add build/data.json index.html
+          git diff --cached --quiet && exit 0
+          git commit -m "Refresh Cam's position"
+          git push
