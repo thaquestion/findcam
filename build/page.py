@@ -4,44 +4,66 @@ HERE=os.path.dirname(os.path.abspath(__file__))
 data=open(os.path.join(HERE,'data.json')).read()
 html=r'''<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Run With Cam</title>
+<title>Run With Cam | Breaking 42</title>
+<meta name="description" content="Find when Cameron Balser will be near you on his Breaking 42 run across America, and where to meet him to run a few miles together.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
-:root{--bg:#f6f3ec;--panel:#fffdf8;--fg:#1c1b19;--muted:#6a675f;--line:#e2ddd1;--accent:#c4461a;--accent-soft:#f6e3d8;--ok:#2f6b3b}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171614;--panel:#211f1c;--fg:#f1ede4;--muted:#a49f94;--line:#35322c;--accent:#ef7a4c;--accent-soft:#3a251b;--ok:#7cc48a}}
-:root[data-theme="dark"]{--bg:#171614;--panel:#211f1c;--fg:#f1ede4;--muted:#a49f94;--line:#35322c;--accent:#ef7a4c;--accent-soft:#3a251b;--ok:#7cc48a}
+:root{--bg:#f5f2eb;--panel:#fbf9f4;--fg:#171c16;--muted:#5e625b;--line:#e3ddd0;--ink:#171c16;--ink2:#1e2820;--gold:#d9b46a;--accent:#171c16;--accent-soft:#efe7d4;--link:#7a5d1f;--ok:#2f6b3b}
 html,body{margin:0;background:var(--bg);color:var(--fg);font-family:"Inter",system-ui,-apple-system,Segoe UI,sans-serif;line-height:1.45}
 *{box-sizing:border-box}
 </style></head>
 <body>
-<header>
-<div style="max-width:760px;margin:0 auto;padding:32px 16px 8px">
-<p style="margin:0 0 6px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:600">San Francisco to New York on foot</p>
-<h1 style="margin:0 0 10px;font-size:34px;line-height:1.1;font-family:Georgia,'Times New Roman',serif">Run a few miles with Cam</h1>
-<p style="margin:0;color:var(--muted);font-size:16px">Type your town, or pick the day you're free, and see when Cameron Balser will be near you and which crew stops to meet him at. The crew stops about every 4 miles, which is the easiest place to join him.</p>
+<header style="background:#f8f5ee;border-bottom:1px solid var(--line)">
+<div style="max-width:1100px;margin:0 auto;padding:18px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+<a href="https://camerondeanbalser.com/" style="color:var(--fg);text-decoration:none;font-weight:800;font-size:17px">Cameron Balser</a>
+<nav style="display:flex;gap:22px;font-size:14px;letter-spacing:.06em;text-transform:uppercase"><a href="https://camerondeanbalser.com/#tracker" style="color:var(--fg);text-decoration:none">Live</a><a href="https://camerondeanbalser.com/route/" style="color:var(--fg);text-decoration:none">Route</a><a href="https://camerondeanbalser.com/adventures/" style="color:var(--fg);text-decoration:none">Adventures</a></nav>
 </div>
 </header>
+<section style="max-width:1100px;margin:28px auto 0;padding:0 16px">
+<div style="background:var(--ink);color:#fbfcf6;border-radius:22px;padding:40px 28px;overflow:hidden">
+<p style="margin:0 0 14px;font-size:12px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)">Breaking 42 / Run with Cam</p>
+<h1 style="margin:0 0 14px;font-size:clamp(36px,7vw,64px);line-height:1;font-weight:900;letter-spacing:-.045em">Run a few miles with Cam.</h1>
+<p style="margin:0;max-width:640px;font-size:18px;color:#d8dbd2">Type your town, or pick the day you're free, and see when Cameron Balser will be near you and which crew stops to meet him at. The crew stops about every 4 miles, which is the easiest place to join him.</p>
+</div>
+</section>
 <style>
-.wrap{max-width:760px;margin:0 auto;padding:0 16px 48px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:18px}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px 48px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;margin-top:18px}
+h2{font-weight:900;letter-spacing:-.03em}h3{font-weight:800;letter-spacing:-.01em}
+.eyebrow{margin:0 0 8px;font-size:12px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#8a6a24}
+#map{height:420px;border-radius:14px;border:1px solid var(--line);margin-top:12px;background:#ece8dd}
+.leg{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:13px;color:var(--muted)}.leg i{display:inline-block;width:22px;height:5px;border-radius:3px;vertical-align:middle;margin-right:6px}
+.leaflet-container{font-family:"Inter",system-ui,sans-serif}.camdot{width:18px;height:18px;border-radius:50%;background:var(--gold);border:3px solid var(--ink);box-shadow:0 0 0 6px rgba(217,180,106,.35)}
 .row{display:flex;gap:8px;flex-wrap:wrap}
 .row input{flex:1 1 220px;min-width:0;font:inherit;font-size:17px;padding:12px 14px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--fg)}
-button{font:inherit;font-size:16px;font-weight:600;padding:12px 18px;border-radius:10px;border:0;background:var(--accent);color:#fff;cursor:pointer}
-button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+button{font:inherit;font-size:16px;font-weight:800;padding:12px 22px;border-radius:999px;border:0;background:var(--ink);color:#fbfcf6;cursor:pointer}
+button.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}
 .small{font-size:13px;color:var(--muted)}
-.big{font-family:Georgia,serif;font-size:26px;line-height:1.2;margin:4px 0 8px}
-.pill{display:inline-block;background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:3px 10px;font-size:13px;font-weight:600}
+.big{font-size:26px;line-height:1.15;font-weight:900;letter-spacing:-.03em;margin:6px 0 8px}
+.pill{display:inline-block;background:var(--accent-soft);color:#6b5119;border-radius:999px;padding:3px 10px;font-size:13px;font-weight:600}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:12px}
 .stat{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
 .stat b{display:block;font-size:18px}
 ul.spots{margin:8px 0 0;padding-left:18px}
 ul.spots li{margin:4px 0}
-a{color:var(--accent)}
+a{color:var(--link)}
 table{width:100%;border-collapse:collapse;font-size:14px}
 th,td{text-align:left;padding:7px 6px;border-bottom:1px solid var(--line)}
 th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
 .tablewrap{overflow-x:auto}
 </style>
 <main class="wrap">
+<section class="card" id="mapcard">
+<p class="eyebrow">Live map</p>
+<h2 style="margin:0 0 6px;font-size:26px" id="maphead">Where Cam is right now</h2>
+<p style="margin:0;color:var(--muted)" id="mapsub"></p>
+<div id="map" role="img" aria-label="Map of Cam's route ahead to New York"></div>
+<div class="leg"><span><i style="background:var(--gold)"></i>Today's stretch</span><span><i style="background:var(--ink)"></i>Road ahead to NYC</span><span><i style="background:#ffffff;border:2px solid var(--ink);width:10px;height:10px;border-radius:50%"></i>Where each day ends</span></div>
+<p class="small" style="margin:8px 0 0" id="mapnote">The gold dot is our best guess of where Cam is, updated from his tracker every few minutes. Tap a dot for the day and town.</p>
+</section>
 <section class="card">
 <label for="q" style="font-weight:600;display:block;margin-bottom:8px">Where are you?</label>
 <div class="row"><input id="q" list="townlist" placeholder="e.g. Marion, IN" autocomplete="off"></div>
@@ -191,6 +213,7 @@ function showWhere(me){
  res.append(el('p',{class:'small',style:'margin:0 0 6px',text:'The highlighted stop is your best bet. Each stop is a few minutes, so get there early and park well off the road.'}));
  res.append(stopTable(near,best));
  res.append(planBox(best));
+ mapShow(me,near,best);
  if(dark(best.e.ms,best.off))res.append(el('p',{class:'small',style:'margin-top:10px',text:'He may pass in the dark, so bring a headlamp and something reflective.'}));
  res.scrollIntoView({behavior:'smooth',block:'start'});
 }
@@ -206,6 +229,7 @@ function showDay(k,me){
  res.append(el('p',{class:'small',text:(k==0?'He is on the road now. ':'He starts around 5 am '+tzName(dayStart(k))+'. ')+'Times can move by about '+winMin(k)+' minutes either way.'}));
  res.append(el('h3',{style:'margin:16px 0 4px;font-size:15px',text:'Crew stops that day'}));
  res.append(stopTable(rows,best));
+ mapShow(me,rows,best);
  res.append(planBox(best||rows[0]));
  res.scrollIntoView({behavior:'smooth',block:'start'});
 }
@@ -239,6 +263,33 @@ const tb=$('#sched');for(let k=0;k<nDays;k++){const tr=el('tr');[ 'Day '+(dayNo0
 $('#schednote').textContent='Cam starts around 5 am local and has averaged '+AVG.toFixed(1)+' miles a day over the last week. Times are local to where he is.';
 $('#method').textContent='From his last GPS ping, the rest of today follows his pace so far. Each later day starts at 5 am local where the previous one ended and covers his last-week average of '+AVG.toFixed(1)+' miles in about '+AVGH.toFixed(1)+' hours, with his usual slowdown late in the day from his two-hour splits and a small adjustment for hills. Crew stops are counted every 4 miles from each day\'s start. The window is plus or minus 20 minutes today and widens about 25 minutes for every day further out. The route follows the crew\'s course: the exact line today, then the planned day starts with a few points in between, so a closest point can be off by a mile or two.';
 $('#asof').textContent='Data as of his '+fmtT(asof,offNow)+' '+tzName(D.lastMile)+' ping on '+fmtD(asof,offNow)+'. Record deadline: '+D.recordDeadline+'.';
+// ---- map ----
+let MAP=null,meLayer=null,camMk=null;
+function guessMile(){const now=Date.now();let lo=D.lastMile,hi=FINISH;const t=m=>{const e=eta(m);return e?e.ms:asof;};if(t(lo+0.01)>now)return D.lastMile;for(let i=0;i<40;i++){const mid=(lo+hi)/2;if(t(mid)<now)lo=mid;else hi=mid;}const k=Math.floor((lo-T0)/AVG);return Math.min(lo,dayEnd(k));}
+(function(){
+ const fin=eta(FINISH-0.01);const offF=tzOff(FINISH);
+ $('#mapsub').textContent=Math.round(D.lastMile).toLocaleString()+' miles down from San Francisco, about '+Math.round(FINISH-D.lastMile).toLocaleString()+' to go to New York City Hall.'+(fin?' At this pace he finishes around '+fmtD(fin.ms,offF)+'.':'');
+ if(typeof L==='undefined'){$('#map').style.display='none';$('#mapnote').textContent='The map could not load. The schedule below has every day.';return;}
+ MAP=L.map('map',{scrollWheelZoom:false,zoomControl:true});
+ L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{maxZoom:18,subdomains:'abcd',attribution:'&copy; OpenStreetMap contributors &copy; CARTO'}).addTo(MAP);
+ const seg=(a,b)=>{const pts=[pointAt(a)];for(const p of route)if(p[0]>a&&p[0]<b)pts.push(p);pts.push(pointAt(b));return pts.map(p=>[p[1],p[2]]);};
+ const gm=guessMile();
+ L.polyline(seg(Math.max(gm,dayEnd(0)),FINISH),{color:'#171c16',weight:4,opacity:.85}).addTo(MAP);
+ if(gm<dayEnd(0))L.polyline(seg(gm,dayEnd(0)),{color:'#d9b46a',weight:7,opacity:1}).addTo(MAP);
+ for(let k=0;k<nDays;k++){const m=dayEnd(k);if(m>=FINISH-0.5)break;const p=pointAt(m),off=tzOff(m);
+  L.circleMarker([p[1],p[2]],{radius:5,color:'#171c16',weight:2,fillColor:'#ffffff',fillOpacity:1}).addTo(MAP).bindTooltip(fmtD(startMs(k),tzOff(dayStart(k)))+': ends '+placeOf(p).replace(/^in /,'')+' (day '+(dayNo0+k)+')');}
+ const f=pointAt(FINISH);L.circleMarker([f[1],f[2]],{radius:8,color:'#171c16',weight:3,fillColor:'#d9b46a',fillOpacity:1}).addTo(MAP).bindTooltip('Finish: New York City Hall',{permanent:true,direction:'left'});
+ const cp=pointAt(gm);
+ camMk=L.marker([cp[1],cp[2]],{icon:L.divIcon({className:'',html:'<div class="camdot"></div>',iconSize:[24,24],iconAnchor:[12,12]}),zIndexOffset:1000}).addTo(MAP).bindTooltip('Cam is about here',{permanent:true,direction:'top',offset:[0,-12]});
+ MAP.fitBounds(L.latLngBounds(seg(Math.max(T0,gm-10),Math.min(FINISH,gm+260))),{padding:[20,20]});
+ setInterval(()=>{const p=pointAt(guessMile());camMk.setLatLng([p[1],p[2]]);},60e3);
+})();
+function mapShow(me,rows,best){
+ if(!MAP)return;if(meLayer)MAP.removeLayer(meLayer);meLayer=L.layerGroup().addTo(MAP);const b=[];
+ if(me){L.circleMarker([me.lat,me.lon],{radius:7,color:'#7a5d1f',weight:3,fillColor:'#fbf9f4',fillOpacity:1}).addTo(meLayer).bindTooltip('You: '+me.label,{permanent:true,direction:'right'});b.push([me.lat,me.lon]);}
+ for(const r of rows){if(!r.e)continue;const p=pointAt(r.m);const isB=best&&r.m===best.m;L.circleMarker([p[1],p[2]],{radius:isB?8:5,color:'#171c16',weight:2,fillColor:isB?'#d9b46a':'#ffffff',fillOpacity:1}).addTo(meLayer).bindTooltip('Crew stop, about '+fmtT(r.e.ms,r.off)+(isB?' (your best bet)':''),isB?{permanent:true,direction:'top'}:{});b.push([p[1],p[2]]);}
+ if(b.length)MAP.fitBounds(L.latLngBounds(b),{padding:[40,40],maxZoom:12});
+}
 </script>
 </body></html>'''
 open(os.path.join(HERE,'meet-cam.html'),'w').write(html.replace('__DATA__',data))
