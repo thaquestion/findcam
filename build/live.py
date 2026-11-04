@@ -16,7 +16,7 @@ def pings(kml):
     out = []
     for pm in re.findall(r'<Placemark[^>]*>(.*?)</Placemark>', kml, re.S):
         w = re.search(r'<when>([^<]+)</when>', pm)
-        c = re.search(r'<Point[^>]*>\s*<coordinates>\s*([-\d.]+),([-\d.]+)', pm)
+        c = re.search(r'<Point[^>]*>.*?<coordinates>\s*([-\d.]+),([-\d.]+)', pm, re.S)
         if w and c:
             t = datetime.fromisoformat(w.group(1).strip().replace('Z', '+00:00'))
             out.append((t, float(c.group(2)), float(c.group(1))))
@@ -40,7 +40,7 @@ def main(kml=None):
         req = urllib.request.Request(f'{FEED}?d1={since}', headers={'User-Agent': 'findcam-refresh'})
         kml = urllib.request.urlopen(req, timeout=60).read().decode('utf-8', 'replace')
     ps = pings(kml)
-    if not ps: print('no pings in feed', len(kml), 'bytes:', re.sub(r'\s+', ' ', kml[:600])); return 0
+    if not ps: pm = re.findall(r'<Placemark.*?</Placemark>', kml, re.S); print('no pings in feed', len(kml), 'bytes', len(pm), 'placemarks:', re.sub(r'\s+', ' ', (pm or [kml])[0])[-900:]); return 0
     last_t = ps[-1][0]
     asof = datetime.fromisoformat(D['asof'].replace('Z', '+00:00'))
     if last_t <= asof: print('no new ping since', D['asof']); return 0
