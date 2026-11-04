@@ -291,7 +291,7 @@ function guessMile(){const now=Date.now();let lo=D.lastMile,hi=FINISH;const t=m=
  setInterval(()=>{const p=pointAt(guessMile());camMk.setLatLng([p[1],p[2]]);},60e3);
 })();
 function mapShow(me,rows,best){
- if(!MAP)return;if(meLayer)MAP.removeLayer(meLayer);meLayer=L.layerGroup().addTo(MAP);const b=[];
+ if(!MAP)return;if(!meLayer)meLayer=L.layerGroup().addTo(MAP);meLayer.eachLayer(l=>{l.unbindTooltip();});meLayer.clearLayers();const b=[];
  if(me){L.circleMarker([me.lat,me.lon],{radius:7,color:'#7a5d1f',weight:3,fillColor:'#fbf9f4',fillOpacity:1}).addTo(meLayer).bindTooltip('You: '+me.label,{permanent:true,direction:'right'});b.push([me.lat,me.lon]);}
  for(const r of rows){if(!r.e)continue;const p=pointAt(r.m);const isB=best&&r.m===best.m;L.circleMarker([p[1],p[2]],{radius:isB?8:5,color:'#171c16',weight:2,fillColor:isB?'#d9b46a':'#ffffff',fillOpacity:1}).addTo(meLayer).bindTooltip('Crew stop, about '+fmtT(r.e.ms,r.off)+(isB?' (your best bet)':''),isB?{permanent:true,direction:'top'}:{});b.push([p[1],p[2]]);}
  if(b.length)MAP.fitBounds(L.latLngBounds(b),{padding:[40,40],maxZoom:12});
