@@ -36,7 +36,7 @@ h2{font-weight:900;letter-spacing:-.03em}h3{font-weight:800;letter-spacing:-.01e
 .eyebrow{margin:0 0 8px;font-size:12px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#8a6a24}
 #map{height:420px;border-radius:14px;border:1px solid var(--line);margin-top:12px;background:#ece8dd}
 .leg{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:13px;color:var(--muted)}.leg i{display:inline-block;width:22px;height:5px;border-radius:3px;vertical-align:middle;margin-right:6px}
-.leaflet-container{font-family:"Inter",system-ui,sans-serif}.camdot{width:18px;height:18px;border-radius:50%;background:var(--gold);border:3px solid var(--ink);box-shadow:0 0 0 6px rgba(217,180,106,.35)}
+.tiles{filter:grayscale(.85) contrast(.95) brightness(1.04)}.leaflet-container{font-family:"Inter",system-ui,sans-serif}.camdot{width:18px;height:18px;border-radius:50%;background:var(--gold);border:3px solid var(--ink);box-shadow:0 0 0 6px rgba(217,180,106,.35)}
 .row{display:flex;gap:8px;flex-wrap:wrap}
 .row input{flex:1 1 220px;min-width:0;font:inherit;font-size:17px;padding:12px 14px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--fg)}
 button{font:inherit;font-size:16px;font-weight:800;padding:12px 22px;border-radius:999px;border:0;background:var(--ink);color:#fbfcf6;cursor:pointer}
@@ -277,7 +277,7 @@ function guessMile(){const now=Date.now();let lo=D.lastMile,hi=FINISH;const t=m=
  $('#mapsub').textContent=Math.round(D.lastMile).toLocaleString()+' miles down from San Francisco, about '+Math.round(FINISH-D.lastMile).toLocaleString()+' to go to New York City Hall.'+(fin?' At this pace he finishes around '+fmtD(fin.ms,offF)+'.':'');
  if(typeof L==='undefined'){$('#map').style.display='none';$('#mapnote').textContent='The map could not load. The schedule below has every day.';return;}
  MAP=L.map('map',{scrollWheelZoom:false,zoomControl:true});
- L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{maxZoom:18,subdomains:'abcd',attribution:'&copy; OpenStreetMap contributors &copy; CARTO'}).addTo(MAP);
+ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',className:'tiles'}).addTo(MAP);
  const seg=(a,b)=>{const pts=[pointAt(a)];for(const p of route)if(p[0]>a&&p[0]<b)pts.push(p);pts.push(pointAt(b));return pts.map(p=>[p[1],p[2]]);};
  const gm=guessMile();
  L.polyline(seg(Math.max(gm,dayEnd(0)),FINISH),{color:'#171c16',weight:4,opacity:.85}).addTo(MAP);
@@ -287,7 +287,7 @@ function guessMile(){const now=Date.now();let lo=D.lastMile,hi=FINISH;const t=m=
  const f=pointAt(FINISH);L.circleMarker([f[1],f[2]],{radius:8,color:'#171c16',weight:3,fillColor:'#d9b46a',fillOpacity:1}).addTo(MAP).bindTooltip('Finish: New York City Hall',{permanent:true,direction:'left'});
  const cp=pointAt(gm);
  camMk=L.marker([cp[1],cp[2]],{icon:L.divIcon({className:'',html:'<div class="camdot"></div>',iconSize:[24,24],iconAnchor:[12,12]}),zIndexOffset:1000}).addTo(MAP).bindTooltip('Cam is about here',{permanent:true,direction:'top',offset:[0,-12]});
- MAP.fitBounds(L.latLngBounds(seg(Math.max(T0,gm-10),Math.min(FINISH,gm+260))),{padding:[20,20]});
+ MAP.fitBounds(L.latLngBounds(seg(Math.max(T0,gm-10),FINISH)),{padding:[24,24]});
  setInterval(()=>{const p=pointAt(guessMile());camMk.setLatLng([p[1],p[2]]);},60e3);
 })();
 function mapShow(me,rows,best){
