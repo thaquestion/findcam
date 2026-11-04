@@ -66,6 +66,17 @@ th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;le
 <p class="small" style="margin:0 0 8px" id="schednote"></p>
 <div class="tablewrap"><table><thead><tr><th>Day</th><th>Date</th><th>From</th><th>To</th></tr></thead><tbody id="sched"></tbody></table></div>
 </section>
+<section class="card" id="faq">
+<h2 style="margin:0 0 8px;font-size:18px">Good to know</h2>
+<h3 style="margin:12px 0 4px;font-size:15px">Will he wait while I get ready?</h3>
+<p style="margin:0">No. Cam's day is planned to the minute, so he leaves each stop right away. Arrive with your vest, belt and shoes sorted, or you'll be playing catch-up.</p>
+<h3 style="margin:12px 0 4px;font-size:15px">What happens at the 4-mile stops?</h3>
+<p style="margin:0">He refuels and sometimes changes clothes. Those stops are tightly timed and he knows exactly how long each one takes. Just roll with the vibes.</p>
+<h3 style="margin:12px 0 4px;font-size:15px">Can the crew help me out?</h3>
+<p style="margin:0">Please be self-sufficient. The crew's job is to keep Cam moving and fed all day, which keeps him on schedule and stacking up miles.</p>
+<h3 style="margin:12px 0 4px;font-size:15px">Can I wait in the van during breaks?</h3>
+<p style="margin:0">No, the van is for Cam and his crew. Bring clothes to stay warm and dry while you wait.</p>
+</section>
 <section class="card">
 <h2 style="margin:0 0 8px;font-size:18px">Before you head out</h2>
 <ul style="margin:0;padding-left:18px">
