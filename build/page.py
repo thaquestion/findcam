@@ -99,7 +99,7 @@ th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;le
 <h3 style="margin:12px 0 4px;font-size:15px">Can the crew help me out?</h3>
 <p style="margin:0">Please be self-sufficient. The crew's job is to keep Cam moving and fed all day, which keeps him on schedule and stacking up miles.</p>
 <h3 style="margin:12px 0 4px;font-size:15px">Cam looks pretty beat up. Is he okay?</h3>
-<p style="margin:0">Running 75 miles a day for six weeks takes a real toll, so he might look worn down, walk a little stiff or have some tape and bandages. That comes with an effort like this, and his team keeps a close eye on his health. Please don't offer medical advice or suggest fixes. The best thing you can bring him is good company and good energy.</p>
+<p style="margin:0">Running 75 miles a day for six weeks takes a real toll, so he might look worn down, walk a little stiff, have a bloody nose, or have some tape and bandages. That comes with an effort like this, and his team keeps a close eye on his health. Please don't offer medical advice or suggest fixes. The best thing you can bring him is good company and good energy.</p>
 <h3 style="margin:12px 0 4px;font-size:15px">Can I wait in the van during breaks?</h3>
 <p style="margin:0">No, the van is for Cam and his crew. Bring clothes to stay warm and dry while you wait.</p>
 </section>
