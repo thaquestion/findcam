@@ -150,10 +150,13 @@ const SCALE=AVGH/rawHours(AVG);
 const planAvg=D.days.reduce((a,d)=>a+d.pace,0)/D.days.length;
 function terrain(mile){for(const d of D.days)if(mile>=d.sm&&mile<d.em)return d.pace/planAvg;return 1;}
 const T0=D.todayStartMile, asof=Date.parse(D.asof), todayStartMs=Date.parse(D.firstPing);
-const dayNo0=D.days[0].day;
+// Today's local date comes from his first ping of the day, not the course plan, so the
+// dates and day numbers stay right after a new day starts.
+const DAYK=Math.round((Date.parse(new Date(todayStartMs+tzOff(T0)*3600e3).toISOString().slice(0,10)+'T00:00:00Z')-Date.parse(D.days[0].date+'T00:00:00Z'))/864e5);
+const dayNo0=D.days[0].day+DAYK;
 // day k (0 = today) runs from T0+k*AVG
 const dayStart=k=>T0+k*AVG, dayEnd=k=>Math.min(FINISH,T0+(k+1)*AVG);
-function startMs(k){const ds=new Date(Date.parse(D.days[0].date+'T00:00:00Z')+k*864e5);const off=tzOff(dayStart(k));return Date.UTC(ds.getUTCFullYear(),ds.getUTCMonth(),ds.getUTCDate(),5-off);}
+function startMs(k){const ds=new Date(Date.parse(D.days[0].date+'T00:00:00Z')+(DAYK+k)*864e5);const off=tzOff(dayStart(k));return Date.UTC(ds.getUTCFullYear(),ds.getUTCMonth(),ds.getUTCDate(),5-off);}
 const todayFactor=((asof-todayStartMs)/3600e3)/(rawHours(D.lastMile-T0)*SCALE);
 function eta(mile){
  if(mile<=D.lastMile)return null;
