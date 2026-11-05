@@ -177,12 +177,21 @@ function planBox(start){
  const v=$('#dist').value;const k=start.e.k;
  const full=v=='full',half=v=='half';
  const n=full?(dayEnd(k)-dayStart(k)):half?Math.round(AVG/2):+v;
- let sm=start.m; if(full)sm=Math.max(dayStart(k),D.lastMile);
- if(full&&k==0){box.append(el('h3',{style:'margin:0 0 6px;font-size:16px',text:'Your run'}),el('p',{text:'Today is already under way. Pick another day to run the whole thing with him.'}));return box;}
- const em=Math.min(sm+n,dayEnd(k));const sp=pointAt(sm),ep=pointAt(em);
- const t1=full?startMs(k):eta(sm-1e-6).ms,t2=eta(em-1e-6).ms,off=tzOff(sm),off2=tzOff(em);
+ // Where to start: short runs begin at the closest stop. Longer runs start at the crew stop
+ // that puts the closest stop near the middle of the run, so the run passes the runner's spot.
+ // A full day runs the whole day (or what is left of today).
+ const ds=dayStart(k),de=dayEnd(k),started=ds<=D.lastMile;
+ const cands=(started?[]:[ds]).concat(stops(k));
+ let sm=start.m;
+ if(full)sm=cands[0];
+ else if(n>4){const fit=cands.filter(c=>c+n<=de+0.5);const pool=fit.length?fit:[cands[0]];const target=start.m-n/2;
+  sm=pool.reduce((b,c)=>Math.abs(c-target)<Math.abs(b-target)?c:b,pool[0]);}
+ const em=Math.min(sm+n,de);const sp=pointAt(sm),ep=pointAt(em);
+ const atDayStart=!started&&Math.abs(sm-ds)<1e-6;
+ const t1=atDayStart?startMs(k):eta(sm-1e-6).ms,t2=eta(em-1e-6).ms,off=tzOff(sm),off2=tzOff(em);
+ const restOfToday=full&&started;
  const miles=Math.round(em-sm);
- box.append(el('h3',{style:'margin:0 0 6px;font-size:16px',text:'Your '+(full?'full day':miles+' miles')+' with Cam'}));
+ box.append(el('h3',{style:'margin:0 0 6px;font-size:16px',text:'Your '+(restOfToday?'rest of today':full?'full day':miles+' miles')+' with Cam'}));
  const ul=el('ul',{style:'margin:0;padding-left:18px'});const li=(...parts)=>{const l=el('li',{style:'margin:5px 0'});parts.forEach(x=>l.append(typeof x=='string'?document.createTextNode(x):x));ul.append(l);};
  const a=(href,text)=>el('a',{href,target:'_blank',rel:'noopener',text});
  if(n<=4){
@@ -191,10 +200,13 @@ function planBox(start){
   li('Then turn around and run '+miles+' miles back to your car on your own, so plan on '+(2*miles)+' miles total.');
  } else if(!full&&!half){
   li('Start near mile '+Math.round(sm).toLocaleString()+', '+placeOf(sp)+', around '+fmtT(t1,off)+'. ',a(parkUrl(sp),'Find parking there'),'.');
+  if(sm<start.m-0.5)li('Your run goes right past your closest crew stop, mile '+Math.round(start.m).toLocaleString()+'.');
   li('Run '+miles+' miles with him to mile '+Math.round(em).toLocaleString()+', '+placeOf(ep)+', around '+fmtT(t2,off2)+'. ',a(mapUrl(ep),'Map of that spot'),'.');
   li('Getting back: the easiest way is to bring a friend or friends, with one driving and the others running. Otherwise run it as an out and back, which makes it '+(2*miles)+' miles total.');
  } else {
-  li((full?'He starts around 5 am '+tzName(sm)+' ':'Join him around '+fmtT(t1,off)+' ')+placeOf(sp)+(full?'':' (mile '+Math.round(sm).toLocaleString()+')')+' and finishes around '+fmtT(t2,off2)+' '+placeOf(ep)+'. That is about '+miles+' miles and '+Math.round((t2-t1)/3600e3)+' hours on your feet.');
+  li((atDayStart?'He starts around 5 am '+tzName(sm)+' ':'Join him around '+fmtT(t1,off)+' ')+placeOf(sp)+(atDayStart?'':' (mile '+Math.round(sm).toLocaleString()+')')+'. He should finish around '+fmtT(t2,off2)+' '+placeOf(ep)+'. That is about '+miles+' miles and '+Math.round((t2-t1)/3600e3)+' hours on your feet.');
+  if(!full&&sm<start.m-0.5)li('Your run goes right past your closest crew stop, mile '+Math.round(start.m).toLocaleString()+'.');
+  if(restOfToday)li('Today is already under way, so this is what is left of it. Pick a later day to run a whole day with him.');
   li('You need your own way back. Best plan: come with a friend or friends, with one driving along and the others running. Or have someone drop you off and pick you up at the end.');
   li('Carry or arrange your own food, water and gear for the whole stretch.');
  }
