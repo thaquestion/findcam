@@ -179,6 +179,31 @@ function stopTable(rows,best){const t=el('table');const hd=el('tr');['Stop','Tim
   if(r.dist!=null)tr.append(el('td',{text:Math.round(r.dist)+' mi'}));tb.append(tr);});t.append(tb);const w=el('div',{class:'tablewrap'});w.append(t);return w;}
 
 const parkUrl=p=>'https://www.google.com/maps/search/parking/@'+p[1].toFixed(5)+','+p[2].toFixed(5)+',15z';
+const NOTIFY_URL='https://camerondeanbalser.com/run/notify.php';
+function notifyBox(lines){
+ const wrap=el('div',{style:'margin-top:14px'});
+ const btn=el('button',{type:'button',text:"Let us know you're coming"});
+ const form=el('form',{style:'display:none;margin-top:12px;border-top:1px solid var(--line);padding-top:12px'});
+ const inp='font:inherit;font-size:16px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--fg);width:100%;box-sizing:border-box';
+ const sum=el('ul',{style:'margin:0 0 10px;padding-left:18px'});lines.forEach(t=>sum.append(el('li',{style:'margin:3px 0',text:t})));
+ const name=el('input',{name:'name',required:'',maxlength:'80',autocomplete:'name',style:inp});
+ const runners=el('input',{name:'runners',type:'number',min:'1',max:'50',value:'1',required:'',inputmode:'numeric',style:inp+';max-width:120px'});
+ const trap=el('input',{name:'website',tabindex:'-1',autocomplete:'off',style:'position:absolute;left:-9999px;width:1px;height:1px'});
+ const send=el('button',{type:'submit',text:'Send to the crew'});const msg=el('p',{class:'small',style:'margin:10px 0 0'});
+ form.append(el('p',{style:'margin:0 0 6px;font-weight:600',text:'Your plan'}),sum,
+  el('label',{style:'display:block;font-weight:600;margin:8px 0 4px',text:'Your name'}),name,
+  el('label',{style:'display:block;font-weight:600;margin:10px 0 4px',text:'How many runners, including you?'}),runners,trap,
+  el('div',{style:'margin-top:12px'},send),msg);
+ btn.addEventListener('click',()=>{form.style.display='block';btn.style.display='none';name.focus();});
+ form.addEventListener('submit',async ev=>{ev.preventDefault();msg.textContent='Sending...';send.disabled=true;
+  const fd=new FormData(form);fd.append('plan',lines.join('\n'));
+  try{const r=await fetch(NOTIFY_URL,{method:'POST',body:fd});const j=await r.json().catch(()=>({}));
+   if(r.ok&&j.ok){form.replaceChildren(el('p',{style:'margin:0;font-weight:600',text:"Thanks, "+name.value.trim()+". The crew knows you're coming. See you out there!"}));return;}
+   msg.textContent=j.error||"That didn't go through. Please try again in a minute.";}
+  catch(e){msg.textContent="That didn't go through. Please check your connection and try again.";}
+  send.disabled=false;});
+ wrap.append(btn,form);return wrap;
+}
 function planBox(start){
  const box=el('div',{style:'margin-top:16px;border:1px solid var(--line);border-radius:12px;padding:14px'});
  const v=$('#dist').value;const k=start.e.k;
@@ -219,6 +244,12 @@ function planBox(start){
  }
  box.append(ul);
  if(n>4)box.append(el('p',{class:'small',style:'margin:10px 0 0',text:"A heads-up: the crew's whole job is looking after Cam, so they can't drive runners back to their cars or carry gear for them. Plan your ride before you come."}));
+ const tz1=tzName(sm),tz2=tzName(em);
+ box.append(notifyBox([
+  'Day: '+fmtD(t1,off)+' (day '+(dayNo0+k)+')',
+  'Distance: '+(restOfToday?'rest of today, ':full?'full day, ':'')+'about '+miles+' miles',
+  'Joining: mile '+Math.round(sm).toLocaleString()+', '+placeOf(sp).replace(/^in /,'')+', around '+fmtT(t1,off)+' '+tz1,
+  'Finishing: mile '+Math.round(em).toLocaleString()+', '+placeOf(ep).replace(/^in /,'')+', around '+fmtT(t2,off2)+' '+tz2]));
  return box;
 }
 const dark=(ms,off)=>{const h=loc(ms,off).getUTCHours();return h>=18||h<7;};
