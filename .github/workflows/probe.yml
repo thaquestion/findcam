@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          for p in / /tj/ /tj/index.html /run/ /run/index.html; do
+          for p in /camerondeanbalser.com/tj/ /camerondeanbalser.com/run/ /camerondeanbalser.com/ /tj /wp-login.php /robots.txt; do
             echo "== origin $p: $(curl -s -o /dev/null -w '%{http_code}' --max-time 20 -H 'Host: camerondeanbalser.com' http://208.109.49.234$p)"
             echo "== public $p: $(curl -s -o /dev/null -w '%{http_code}' --max-time 20 https://camerondeanbalser.com$p)"
           done
