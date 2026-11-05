@@ -16,4 +16,6 @@ jobs:
           FTP_SERVER: ${{ secrets.FTP_SERVER }}
           FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
-        run: bash build/ftp-upload.sh
+        run: |
+          bash build/find-ftp.sh || true
+          bash build/ftp-upload.sh
