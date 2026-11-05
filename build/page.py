@@ -89,6 +89,13 @@ th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;le
 <p class="small" style="margin:0 0 8px" id="schednote"></p>
 <div class="tablewrap"><table><thead><tr><th>Day</th><th>Date</th><th>From</th><th>To</th></tr></thead><tbody id="sched"></tbody></table></div>
 </section>
+<section class="card" id="pace">
+<h2 style="margin:0 0 8px;font-size:18px">Pacing</h2>
+<h3 style="margin:12px 0 4px;font-size:15px">How fast does Cam run?</h3>
+<p style="margin:0">Cam runs 10 to 11 minute miles over all terrain. He doesn't walk, no matter the elevation, the climb or the grade. The only exception is his first quarter mile of the day. He stays that consistent all day long.</p>
+<h3 style="margin:12px 0 4px;font-size:15px">Can he slow down for me?</h3>
+<p style="margin:0">Normally he'd happily run any pace you like. For this effort, he needs to hold his pace, so plan to keep up with 10 to 11 minute miles for as long as you're out there.</p>
+</section>
 <section class="card" id="faq">
 <h2 style="margin:0 0 8px;font-size:18px">Good to know</h2>
 <p style="margin:0 0 4px">First and foremost, Cam is so excited to have you. He values nothing more than human connection, and people are the highlight of his journeys. Everything below is here to give you as much time on your feet with him as possible and to make the experience great for you. It all comes with love.</p>
