@@ -9,12 +9,9 @@ git config user.email "findcam-bot@users.noreply.github.com"
 END=$((SECONDS + 5*3600 + 30*60))
 uploaded=""
 upload() {
-  if [ -z "${FTP_SERVER:-}" ] || [ -z "${FTP_USERNAME:-}" ]; then echo "ftp: secrets missing, skipped"; return; fi
   sum=$(sha1sum index.html | cut -c1-40)
   [ "$sum" = "$uploaded" ] && return
-  if curl -sS --ssl --connect-timeout 30 --max-time 120 -T index.html --user "$FTP_USERNAME:$FTP_PASSWORD" "ftp://$FTP_SERVER/index.html"; then
-    uploaded=$sum; echo "ftp: uploaded index.html"
-  else echo "ftp: upload failed"; fi
+  bash build/ftp-upload.sh && uploaded=$sum
 }
 while :; do
   h=$((10#$(date -u +%H)))
