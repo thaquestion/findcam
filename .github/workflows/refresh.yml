@@ -23,7 +23,7 @@ jobs:
       - name: Refresh every 5 minutes, publish to Pages and camerondeanbalser.com/run
         env:
           GH_TOKEN: ${{ github.token }}
-          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_SERVER: 208.109.49.234
           FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
           FORCE_ONCE: '1'
