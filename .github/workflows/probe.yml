@@ -1,0 +1,16 @@
+name: Probe Cam's hosting
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          for p in / /tj/ /tj/index.html /run/ /run/index.html; do
+            echo "== origin $p: $(curl -s -o /dev/null -w '%{http_code}' --max-time 20 -H 'Host: camerondeanbalser.com' http://208.109.49.234$p)"
+            echo "== public $p: $(curl -s -o /dev/null -w '%{http_code}' --max-time 20 https://camerondeanbalser.com$p)"
+          done
+          echo "== public headers"; curl -sI --max-time 20 https://camerondeanbalser.com/ | grep -iE '^(server|x-sucuri|x-powered|location|link)' 
+          echo "== origin headers"; curl -sI --max-time 20 -H 'Host: camerondeanbalser.com' http://208.109.49.234/ | grep -iE '^(server|x-|location|link|HTTP)'
+          echo "== public home generator"; curl -s --max-time 20 https://camerondeanbalser.com/ | grep -oiE '<meta name="generator"[^>]*>|wp-content|wix|squarespace|godaddy|websites\.godaddy|img1\.wsimg' | sort | uniq -c | head
