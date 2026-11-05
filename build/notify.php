@@ -25,7 +25,7 @@ $hits = array_filter(array_map('intval', @file($f) ?: []), fn($t) => $t > $now -
 if (count($hits) >= 5) { http_response_code(429); echo '{"ok":false,"error":"Too many in a short time. Please try again later."}'; exit; }
 $hits[] = $now; @file_put_contents($f, implode("\n", $hits));
 
-$to = $test ? 'tj@meshtc.com' : 'tj@meshtc.com, samyeary@gmail.com';
+$to = 'tj@meshtc.com'; // add more addresses here, comma separated
 $subject = ($test ? '[Test] ' : '') . "Runner coming: $name ($runners)";
 $body = "$name is planning to run with Cam" . ($runners > 1 ? " with $runners runners in total" : '') . ".\n\n"
       . "Their plan:\n$plan\n\nRunners: $runners\n\nSent from the Run With Cam page.\n";
