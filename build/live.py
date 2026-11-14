@@ -50,7 +50,7 @@ def main(kml=None):
     today = [p for p in ps if p[0] >= day_start]
     if not today: print('no pings today'); return 0
     route = D['route']; prev = D['lastMile']
-    new_day = today[0][0] > datetime.fromisoformat(D['firstPing'].replace('Z', '+00:00')) + timedelta(hours=12)
+    new_day = datetime.fromisoformat(D['firstPing'].replace('Z', '+00:00')) < day_start
     lo = prev - 3; hi = prev + 90
     lastp = project(route, today[-1][1], today[-1][2], lo, hi)
     if not lastp or lastp[0] > 3: print('last ping is off the route, leaving data as is', lastp); return 0
@@ -58,9 +58,8 @@ def main(kml=None):
     if new_day:
         # The day's first ping is often from where the crew slept, off the course.
         # Start the day at the first ping that is on the course instead. The window
-        # reaches back so a late catch-up still finds this morning's start, but never
-        # before yesterday's start.
-        slo = max(D['todayStartMile'] + 20, prev - 60)
+        # reaches back so a late catch-up still finds this morning's start.
+        slo = prev - 60
         for t, a, o in today:
             first = project(route, a, o, slo, m + 0.5)
             if first and first[0] <= 3:
