@@ -1,0 +1,8 @@
+# Uploaded as .htaccess to camerondeanbalser.com/run so the page is never served stale.
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html|htm|php)$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate, max-age=0"
+    Header set Pragma "no-cache"
+    Header set Expires "0"
+  </FilesMatch>
+</IfModule>

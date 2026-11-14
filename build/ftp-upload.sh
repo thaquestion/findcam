@@ -11,6 +11,8 @@ try() { # $1 url host, $2 extra curl args
   out=$(curl -sS --ssl-reqd --connect-timeout 30 --max-time 120 $2 -T index.html --user "$U:$FTP_PASSWORD" "ftp://$1/index.html" 2>&1); rc=$?
   if [ $rc = 0 ] && [ -f build/notify.php ]; then
     out=$(curl -sS --ssl-reqd --connect-timeout 30 --max-time 120 $2 -T build/notify.php --user "$U:$FTP_PASSWORD" "ftp://$1/notify.php" 2>&1); rc=$?; fi
+  if [ $rc = 0 ] && [ -f build/htaccess ]; then
+    out=$(curl -sS --ssl-reqd --connect-timeout 30 --max-time 120 $2 -T build/htaccess --user "$U:$FTP_PASSWORD" "ftp://$1/.htaccess" 2>&1); rc=$?; fi
   if [ $rc = 0 ]; then echo "ftp: uploaded index.html and notify.php via $1"
     curl -sS --ssl-reqd --connect-timeout 30 $2 --list-only --user "$U:$FTP_PASSWORD" "ftp://$1/" 2>/dev/null | head -20 | sed 's/^/ftp: home has: /'
     exit 0; fi

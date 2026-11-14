@@ -2,7 +2,7 @@ name: Upload page to camerondeanbalser.com/run
 on:
   push:
     branches: [main]
-    paths: [index.html, build/notify.php]
+    paths: [index.html, build/notify.php, build/htaccess, build/ftp-upload.sh]
   workflow_dispatch:
 permissions:
   contents: read
