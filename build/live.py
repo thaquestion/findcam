@@ -52,12 +52,22 @@ def main(kml=None):
     route = D['route']; prev = D['lastMile']
     new_day = today[0][0] > datetime.fromisoformat(D['firstPing'].replace('Z', '+00:00')) + timedelta(hours=12)
     lo = prev - 3; hi = prev + 90
-    first = project(route, today[0][1], today[0][2], lo, hi)
     lastp = project(route, today[-1][1], today[-1][2], lo, hi)
     if not lastp or lastp[0] > 3: print('last ping is off the route, leaving data as is', lastp); return 0
     m = max(round(lastp[1], 1), prev if not new_day else 0)
-    if new_day and first and first[0] <= 3:
-        D['firstPing'] = today[0][0].strftime('%Y-%m-%dT%H:%M:%SZ'); D['todayStartMile'] = round(first[1], 1)
+    if new_day:
+        # The day's first ping is often from where the crew slept, off the course.
+        # Start the day at the first ping that is on the course instead. The window
+        # reaches back so a late catch-up still finds this morning's start, but never
+        # before yesterday's start.
+        slo = max(D['todayStartMile'] + 20, prev - 60)
+        for t, a, o in today:
+            first = project(route, a, o, slo, m + 0.5)
+            if first and first[0] <= 3:
+                D['firstPing'] = t.strftime('%Y-%m-%dT%H:%M:%SZ'); D['todayStartMile'] = round(min(first[1], m), 1)
+                break
+        else:
+            print('no on-course ping yet today, keeping the day start as is')
     D['lastMile'] = m
     D['asof'] = last_t.strftime('%Y-%m-%dT%H:%M:%SZ')
     miles = m - D['todayStartMile']
