@@ -1,0 +1,14 @@
+name: Check camerondeanbalser.com/run
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/diag.yml]
+  workflow_dispatch:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          for u in https://camerondeanbalser.com/run https://camerondeanbalser.com/run/ "https://camerondeanbalser.com/run/?v=2" https://www.camerondeanbalser.com/run https://camerondeanbalser.com/run/index.html; do
+            echo "=== $u"; curl -sS -m 30 -D - -o body.html "$u" | grep -iE '^(HTTP|location|cache|age|x-|server|cf-|via|expires|last-modified|content-type)' ; grep -o 'todayMiles":[0-9.]*' body.html | head -1; grep -o '<title>[^<]*' body.html | head -1; wc -c < body.html
+          done
