@@ -18,8 +18,8 @@ while :; do
   if [ "${FORCE_ONCE:-0}" = 1 ] || [ $h -ge 10 ] || [ $h -lt 4 ]; then
     git pull -q --rebase origin main || git rebase --abort
     python build/live.py || echo "live.py failed"
-    python build/page.py && cp build/meet-cam.html index.html
-    git add build/data.json index.html
+    python build/page.py && cp build/meet-cam.html index.html && cp build/data.json data.json
+    git add build/data.json index.html data.json
     if ! git diff --cached --quiet; then
       git commit -qm "Refresh Cam's position" && (git push -q origin HEAD:main || (git pull -q --rebase origin main && git push -q origin HEAD:main)) && echo "pushed"
     fi

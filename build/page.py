@@ -353,5 +353,16 @@ function mapShow(me,rows,best){
  if(b.length)MAP.fitBounds(L.latLngBounds(b),{padding:[40,40],maxZoom:12});
 }
 </script>
+<script>
+// The web host's firewall can keep serving an old copy of this page. Check for newer
+// data on a fresh address and, if there is some, reload with a unique address so the
+// firewall has to fetch the current page.
+(function(){
+ function check(){try{fetch('data.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(n){
+  if(n&&n.asof&&Date.parse(n.asof)>Date.parse(D.asof)){var u=new URL(location.href);if(u.searchParams.get('t')===n.asof)return;u.searchParams.set('t',n.asof);location.replace(u.toString());}
+ }).catch(function(){});}catch(e){}}
+ check();setInterval(check,5*60e3);
+})();
+</script>
 </body></html>'''
 open(os.path.join(HERE,'meet-cam.html'),'w').write(html.replace('__DATA__',data))
