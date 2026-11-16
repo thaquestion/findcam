@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, timezone
 HERE = os.path.dirname(os.path.abspath(__file__))
 P = os.path.join(HERE, 'data.json')
 FEED = 'https://share.garmin.com/Feed/Share/HJZZX'
+OFF = 10
 
 def hav(a, b, c, d):
     r = math.radians
@@ -53,7 +54,9 @@ def main(kml=None):
     new_day = datetime.fromisoformat(D['firstPing'].replace('Z', '+00:00')) < day_start
     lo = prev - 3; hi = prev + 90
     lastp = project(route, today[-1][1], today[-1][2], lo, hi)
-    if not lastp or lastp[0] > 3: print('last ping is off the route, leaving data as is', lastp); return 0
+    # Past Iowa the course is drawn town to town, so real roads can sit several miles
+    # off the line (PA mountains). Allow up to OFF miles.
+    if not lastp or lastp[0] > OFF: print('last ping is off the route, leaving data as is', lastp); return 0
     m = max(round(lastp[1], 1), prev if not new_day else 0)
     if new_day:
         # The day's first ping is often from where the crew slept, off the course.
@@ -62,7 +65,7 @@ def main(kml=None):
         slo = prev - 60
         for t, a, o in today:
             first = project(route, a, o, slo, m + 0.5)
-            if first and first[0] <= 3:
+            if first and first[0] <= OFF:
                 D['firstPing'] = t.strftime('%Y-%m-%dT%H:%M:%SZ'); D['todayStartMile'] = round(min(first[1], m), 1)
                 break
         else:
