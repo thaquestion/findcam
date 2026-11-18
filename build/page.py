@@ -154,13 +154,17 @@ const T0=D.todayStartMile, asof=Date.parse(D.asof), todayStartMs=Date.parse(D.fi
 // dates and day numbers stay right after a new day starts.
 const DAYK=Math.round((Date.parse(new Date(todayStartMs+tzOff(T0)*3600e3).toISOString().slice(0,10)+'T00:00:00Z')-Date.parse(D.days[0].date+'T00:00:00Z'))/864e5);
 const dayNo0=D.days[0].day+DAYK;
+// Cam plans to finish on this date, running whatever is left that day.
+const LASTDATE='2026-11-20';
+const KMAX=Math.max(0,Math.round((Date.parse(LASTDATE+'T00:00:00Z')-Date.parse(D.days[0].date+'T00:00:00Z'))/864e5)-DAYK);
+const dk=m=>Math.min(KMAX,Math.floor((m-T0)/AVG));
 // day k (0 = today) runs from T0+k*AVG
-const dayStart=k=>T0+k*AVG, dayEnd=k=>Math.min(FINISH,T0+(k+1)*AVG);
+const dayStart=k=>T0+k*AVG, dayEnd=k=>k>=KMAX?FINISH:Math.min(FINISH,T0+(k+1)*AVG);
 function startMs(k){const ds=new Date(Date.parse(D.days[0].date+'T00:00:00Z')+(DAYK+k)*864e5);const off=tzOff(dayStart(k));return Date.UTC(ds.getUTCFullYear(),ds.getUTCMonth(),ds.getUTCDate(),5-off);}
 const todayFactor=((asof-todayStartMs)/3600e3)/(rawHours(D.lastMile-T0)*SCALE);
 function eta(mile){
  if(mile<=D.lastMile)return null;
- const k=Math.floor((mile-T0)/AVG);const x=mile-dayStart(k);
+ const k=dk(mile);const x=mile-dayStart(k);
  if(k==0){return {ms:asof+(rawHours(x)-rawHours(D.lastMile-T0))*SCALE*todayFactor*3600e3,k};}
  return {ms:startMs(k)+rawHours(x)*SCALE*terrain(mile)*3600e3,k};
 }
@@ -306,7 +310,7 @@ $('#go').addEventListener('click',go);$('#dist').addEventListener('change',()=>{
 $('#geo').addEventListener('click',()=>{if(!navigator.geolocation){$('#err').textContent="Your browser can't share location here. Type your town instead.";return;}
  navigator.geolocation.getCurrentPosition(p=>{geoMe={lat:p.coords.latitude,lon:p.coords.longitude,label:'you'};$('#q').value='';go();},()=>{$('#err').textContent="Location wasn't shared. Type your town instead.";},{timeout:10000});});
 const dl=$('#townlist');D.towns.forEach(t=>dl.append(el('option',{value:t[0]+', '+t[1]})));
-const nDays=Math.ceil((FINISH-T0)/AVG);
+const nDays=Math.min(KMAX+1,Math.ceil((FINISH-T0)/AVG));
 const sel=$('#dt');for(let k=0;k<nDays;k++)sel.append(el('option',{value:String(k),text:fmtD(startMs(k),tzOff(dayStart(k)))+' (day '+(dayNo0+k)+')'}));
 // now card
 const offNow=tzOff(D.lastMile);
@@ -318,7 +322,7 @@ nw.append(nst);
 (function(){const gp=el('p',{style:'margin:10px 0 0'});nw.append(gp);
  const tick=()=>{const now=Date.now();if(now<=asof+10*60e3){gp.textContent='';return;}let lo=D.lastMile,hi=FINISH;const t=m=>{const e=eta(m);return e?e.ms:asof;};if(t(lo+0.01)>now){gp.textContent='';return;}
  for(let i=0;i<40;i++){const mid=(lo+hi)/2;if(t(mid)<now)lo=mid;else hi=mid;}
- const k=Math.floor((lo-T0)/AVG),endMs=eta(dayEnd(k)-0.01).ms;const mins=Math.round((now-asof)/60e3);
+ const k=dk(lo),endMs=eta(dayEnd(k)-0.01).ms;const mins=Math.round((now-asof)/60e3);
  gp.textContent=now>endMs?'Best guess right now: done for the day '+placeOf(pointAt(dayEnd(k)))+'.':'Best guess right now, '+mins+' min after his last ping at today\'s pace: about mile '+Math.round(lo).toLocaleString()+', '+placeOf(pointAt(lo))+'. Check his live Garmin map to be sure.';};
  tick();setInterval(tick,60e3);})();
 const tb=$('#sched');for(let k=0;k<nDays;k++){const tr=el('tr');[ 'Day '+(dayNo0+k), fmtD(startMs(k),tzOff(dayStart(k))), placeOf(pointAt(Math.max(dayStart(k),T0))).replace(/^in /,''), placeOf(pointAt(dayEnd(k))).replace(/^in /,'')].forEach(v=>tr.append(el('td',{text:v})));tb.append(tr);}
