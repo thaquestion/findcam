@@ -22,9 +22,9 @@ try() { # $1 url host, $2 extra curl args
 }
 if [[ $S =~ ^[0-9.]+$ ]]; then
   names=$( { dig +short -x "$S" | sed 's/\.$//';
-    echo | timeout 20 openssl s_client -starttls ftp -connect "$S:21" 2>/dev/null | openssl x509 -noout -ext subjectAltName -subject 2>/dev/null | grep -oE '[A-Za-z0-9*.-]+\.[a-z]{2,}' ; } | grep -v '^\*' | sort -u)
+    echo | timeout 20 openssl s_client -starttls ftp -connect "$S:21" 2>/dev/null | openssl x509 -noout -ext subjectAltName -subject 2>/dev/null | grep -oE '[A-Za-z0-9*.-]+\.[a-z]{2,}' ; } | grep -v '^\*' | sort -u; echo prod.phx3.secureserver.net)
   echo "ftp: certificate and reverse DNS names: $(echo $names)"
-  for n in $names; do try "$n" "--connect-to $n:21:$S:21"; done
+  for n in prod.phx3.secureserver.net $names; do try "$n" "--connect-to $n:21:$S:21"; done
 else
   try "$S" ""
 fi
